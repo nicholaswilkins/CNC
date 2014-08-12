@@ -1,0 +1,18 @@
+{
+  "name": "CNC",
+  "version": "0.0.0",
+  "description": "This project attempts to enable an easy setup of a computer cluster. Each node only needs to run a script to connect.",
+  "main": "server.js",
+  "repository": "",
+  "author": "Nicholas Wilkins",
+  "dependencies": {
+    "socket.io": "~0.9.14"
+  },
+  "subdomain": "cnc",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
