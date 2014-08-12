@@ -1,5 +1,8 @@
 "use strict";
 var net = require('net');
+var events=require('events');
+var needToListen=new events.EventEmitter();
+var ignore = []; //sockets who are in a "sub program"
 function cleanInput(data) {
 	return data.toString().replace(/(\r\n|\n|\r)/gm,"");
 }
@@ -25,7 +28,7 @@ socket.write(" | (__ | .` | | (__  \n");
 socket.write("  \\___||_|\\_|  \\___| \n");
 sendData(socket,"----------------------");
 }
-
+var clientListner=require('./clientListner.js');
 var help = function(){
     return "help";
 };
@@ -34,11 +37,18 @@ var request = function(request,socket){
 	    case "help":
 	        sendData(socket,help());
 	        break;
+	    case "establishConnection":
+	    	clientListner.createServer(socket,socket).listen(2000);
+	    	needToListen.emit('ignore',socket);
+	    	break;
         default:
             sendData(socket, "Command Not Found");
             break;
     }
 };
+needToListen.on('ignore',function(socket){
+	ignore.push(socket);
+})
 exports.createServer = function(){
 	var netServer = net.createServer(
 	function (socket) {
@@ -56,7 +66,9 @@ exports.createServer = function(){
 				}
 			}else{
 				//a valid user :-)
-				request(cleanInput(chunk),socket);
+				if(ignore.indexOf(socket)==-1){
+					request(cleanInput(chunk),socket);
+				}
 			}
 		});
 	});
